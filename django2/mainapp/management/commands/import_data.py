@@ -1,4 +1,5 @@
 import os
+import shutil
 from datetime import date, datetime
 import openpyxl
 from django.conf import settings
@@ -155,7 +156,11 @@ class Command(BaseCommand):
         wb = openpyxl.load_workbook(file_path)
         ws = wb.active
         created = 0
+        photo_path = ""
+        products_media_dir = os.path.join(settings.MEDIA_ROOT, 'products')
+        os.makedirs(products_media_dir, exist_ok = True)
         for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            self.stdout.write(f'{row}')
             article = row[0]
             if not article:
                 continue
@@ -171,16 +176,30 @@ class Command(BaseCommand):
                 continue
             unit = str(row[4] or "шт.").strip()
             try:
-                stock_quantity = int(row[5] or 0)
+                stock_quantity = int(row[8] or 0)
+                self.stdout.write(f'{row[8]}')
             except (ValueError, TypeError):
-                stock_quantity = 0
+             stock_quantity = 0
             try:
-                discount = float(row[6] or 0)
+                discount = float(row[7] or 0)
             except (ValueError, TypeError):
                 discount = 0
-            category_name = str(row[7] or "").strip()
-            manufacturer_name = str(row[8] or "").strip()
-            supplier_name = str(row[9] or "").strip()
+            category_name = str(row[6] or "").strip()
+            manufacturer_name = str(row[5] or "").strip()
+            supplier_name = str(row[4] or "").strip()
+            photo_name = str(row[10] or "").strip()
+            if photo_name :
+              src_photo = os.path.join(self.import_dir, photo_name)
+              if os.path.isfile(src_photo):
+                dst_photo = os.path.join(products_media_dir, photo_name)
+                shutil.copy2(src_photo, dst_photo)
+                photo_path = f'products/{photo_name}'
+
+
+
+            self.stdout.write(
+                f"{article}, {name}, {description}, {price}, {unit}, {stock_quantity}, {discount}, {category_name}, {manufacturer_name}, {supplier_name}"
+            )
 
             if (
                 not name
@@ -209,6 +228,7 @@ class Command(BaseCommand):
                     "category": category,
                     "manufacturer": manufacturer,
                     "supplier": supplier,
+                   "photo": photo_path if photo_path else None,
                 },
             )
             if is_new:
