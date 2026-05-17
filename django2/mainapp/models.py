@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
@@ -101,3 +102,47 @@ class OrderItem(models.Model):
 
   def __str__(self):
     return f'{self.product.name} x {self.quantity}'
+
+
+class Cart(models.Model):
+  user = models.OneToOneField(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.CASCADE,
+    related_name='cart',
+    verbose_name='пользователь'
+  )
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    verbose_name = 'Корзина'
+    verbose_name_plural = 'Корзины'
+
+  def __str__(self):
+      return f'Корзина{self.user.username}'
+
+  def total_price(self):
+      return sum(item.item_total() for item in self.items.all())
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="items",
+        verbose_name="корзина",
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="cart_items",
+        verbose_name="товар",
+    )
+    quantity = models.PositiveIntegerField(default=1, verbose_name="количество")
+
+    class Meta:
+        verbose_name = "Позиция корзины"
+        verbose_name_plural = "Позиции корзины"
+        unique_together = ("cart", "product")
+
+    def item_total(self):
+        return self.product.discounted_price * self.quantity

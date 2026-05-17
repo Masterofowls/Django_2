@@ -3,24 +3,37 @@
 Главная
 {% endblock %}
 {% block content %}
-  <h1>Главная страница</h1>
-  <p>FBV работает.</p>
-  
-  <a href="{% url 'product_list' %}"
-    style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
-    Перейти к товарам
-  </a>
+<h1>Главная страница</h1>
+<p>FBV работает.</p>
 
-  {% if user.is_authenticated %}
-  <span>{{ user.username }}</span>
-  <a href="{% url 'logout' %}"
-    style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
+<a href="{% url 'product_list' %}"
+  style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
+  Перейти к товарам
+</a>
+
+{% if user.is_authenticated %}
+<span>{{ user.username }}</span>
+<form method="post" action="{% url 'logout' %}" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit"
+    style="padding:8px 14px;border:1px solid #333;background:none;border-radius:6px;cursor:pointer;">
     Выйти
-  </a>
-  {% else %}
-  <a href="{% url 'login' %}"
-    style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
-    Войти
-  </a>
-  {% endif %}
+  </button>
+</form>
+{% if user.role == 'admin' %}
+<a href="{% url 'product_create' %}"
+  style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
+  Добавить товар
+</a>
+{% endif %}
+{% else %}
+<a href="{% url 'login' %}"
+  style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
+  Войти
+</a>
+<a href="{% url 'register' %}"
+  style="display:inline-block;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
+  Зарегистрироваться
+</a>
+{% endif %}
 {% endblock %}

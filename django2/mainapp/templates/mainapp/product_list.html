@@ -3,18 +3,51 @@
 Лист товаров
 {% endblock %}
 {% block content %}
-  <h1>Список товаров</h1>
-  <ul>
-    {% for product in products %}
-    <li>
-      {{ product.name }} ({{ product.article }}) -
-      {{ product.price }} ₽
-    </li>
-    {% empty %}
-    <li>Товаров пока нет.</li>
-    {% endfor %}
-  </ul>
+<h1>Список товаров</h1>
+<ul>
+  {% for product in products %}
+  <li>
+    {% if product.photo %}
+    <img src="{{ product.photo.url }}" alt="{{ product.name }}"
+      style="width:60px;height:60px;object-fit:cover;vertical-align:middle;margin-right:8px;">
+    {% endif %}
+    {{ product.name }} ({{ product.article }}) -
+    {{ product.price }} ₽
 
-  <p><a href="{% url 'home' %}">На главную</a></p>
+    <form method="post" action="{% url 'cart_add' product.pk %}" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit"
+        style="margin-left:8px;padding:4px 10px;border:1px solid green;background:none;border-radius:4px;cursor:pointer;color:green;">
+        В корзину
+      </button>
+    </form>
+
+    {% if user.role == 'admin' %}
+    <a href="{% url 'product_update' product.pk %}"
+      style="margin-left:8px;padding:4px 10px;border:1px solid #333;text-decoration:none;border-radius:4px;">
+      Редактировать
+    </a>
+    <form method="post" action="{% url 'product_delete' product.pk %}" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit"
+        style="margin-left:4px;padding:4px 10px;border:1px solid red;background:none;border-radius:4px;cursor:pointer;color:red;"
+        onclick="return confirm('Удалить {{ product.name }}?')">
+        Удалить
+      </button>
+    </form>
+    {% endif %}
+  </li>
+  {% empty %}
+  <li>Товаров пока нет.</li>
+  {% endfor %}
+</ul>
+
+{% if user.role == 'admin' %}
+<a href="{% url 'product_create' %}"
+  style="display:inline-block;margin-top:12px;padding:8px 14px;border:1px solid #333;text-decoration:none;border-radius:6px;">
+  Добавить товар
+</a>
+{% endif %}
+
+<p><a href="{% url 'home' %}">На главную</a></p>
 {% endblock %}
-
