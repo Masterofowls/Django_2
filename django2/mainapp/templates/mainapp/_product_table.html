@@ -1,0 +1,28 @@
+<table style="background: gray border-box padding-box ;">
+  <thead>
+    <tr>
+      <th>Артикул</th>
+      <th>Название</th>
+      <th>Категория</th>
+      <th>Производитель</th>
+      <th>Цена</th>
+      <th>Скидка</th>
+      <th>Цена со скидкой</th>
+      <th>На складе</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr>
+      <td>{{ product.article }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.category }}</td>
+      <td>{{ product.manufacturer }}</td>
+      <td>{{ product.price }} ₽</td>
+      <td>{{ product.discount }} %</td>
+      <td>{{ product.discounted_price }} ₽</td>
+      <td>{{ product.stock_quantity }} {{ product.unit }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
