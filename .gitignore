@@ -1,1 +1,6 @@
 /.venv
+/.vscode
+/.dist
+/django2/mainapp/__pycache__
+/django2/mainapp/management/commands/__pycache__
+/django2/venv

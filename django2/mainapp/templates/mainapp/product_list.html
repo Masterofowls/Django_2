@@ -1,18 +1,39 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}
 Лист товаров
 {% endblock %}
 {% block content %}
+<style>
+  .row-high-discount{
+    background-color: #2E8B57;
+  }
+  .row-out-of-stock{
+    background-color: blue;
+  }
+</style>
 <h1>Список товаров</h1>
 <ul>
   {% for product in products %}
-  <li>
+    <li class="{% if product.discount > 15 %}row-high-discount{% elif product.stock_quantity == 0 %}row-out-of-stock{% endif %} {% if is_admin_user %}clickable-row{% endif %}">
     {% if product.photo %}
     <img src="{{ product.photo.url }}" alt="{{ product.name }}"
       style="width:60px;height:60px;object-fit:cover;vertical-align:middle;margin-right:8px;">
+    {% else %}
+    <img src="{% static 'picture.png' %}" alt='нет фото'  style="width:60px;height:60px;object-fit:cover;vertical-align:middle;margin-right:8px;">
+      
     {% endif %}
-    {{ product.name }} ({{ product.article }}) -
-    {{ product.price }} ₽
+    {{product.category}} |{{ product.name }} 
+    {{product.description}} {{product.supplier}} {{product.manufacturer}}
+    ({{ product.article }}) 
+    {% if product.discount > 0 %}
+    <span style = "text-decoration:line-through ; color: red"> {{ product.price }} ₽ </span>
+    {{product.discount}} %
+    <p style="width:60px;height:60px;object-fit:cover;vertical-align:middle;margin-left:800px;"> {{product.discounted_price}}  ₽ </p>
+    {% else %}
+    {{product.price}}
+    {% endif%}
+    {{product.unit}}
 
     <form method="post" action="{% url 'cart_add' product.pk %}" style="display:inline;">
       {% csrf_token %}

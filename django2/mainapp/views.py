@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 
-from .models import Product, Cart, CartItem
+from .models import Product, Cart, CartItem, Order
 
 
 def is_admin(user):
@@ -126,3 +126,12 @@ def cart_remove(request, pk):
     if request.method == "POST":
         item.delete()
     return redirect("cart")
+
+class OrderListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Order
+    template = "mainapp/order_list.html"
+    fields = [
+        
+    ]
+    def test_func(self):
+        return is_admin(self.request.user)

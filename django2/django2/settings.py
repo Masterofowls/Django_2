@@ -110,6 +110,10 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = '/media/'
 
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 LOGIN_URL = '/login/'
 
 LOGIN_REDIRECT_URL = '/'

@@ -81,6 +81,8 @@ class Order(models.Model):
   order_date = models.DateField(verbose_name = "дата заказа")
   delivery_date = models.DateField(blank = True, null = True, verbose_name = "дата доставки")
   pickup_point = models.ForeignKey(PickUpPoint, on_delete = models.PROTECT, null = True, blank = True,  related_name = 'orders', verbose_name = 'пунк твыдачи')
+  full_name = models.CharField(max_length=256, blank=True, verbose_name = 'ФИО')
+  code = models.CharField(max_length=256, blank=True, verbose_name = 'код заказа')
   status = models.CharField(choices = STATUS_CHOICES, max_length = 20, default = 'new', verbose_name = 'статус')
 
   class Meta:
